@@ -1,7 +1,24 @@
 import random
-from CitizenClass import Citizen
 
-population = 10
+class Party:
+    def __init__(self, name, weight):
+        self.name = name
+        self.weight = weight
+        self.votes = 0
+
+# Establishing variables
+LIBERAL_PARTY = Party("Liberal", 3)
+CONSERVATIVE_PARTY = Party("Conservative", 2)
+NDP_PARTY = Party("NDP", 1)
+
+partyList = [LIBERAL_PARTY, CONSERVATIVE_PARTY, NDP_PARTY]
+
+class Citizen:
+    def __init__(self):
+        self.preference = random.choices(partyList, weights=[LIBERAL_PARTY.weight, CONSERVATIVE_PARTY.weight, NDP_PARTY.weight])
+
+# Population who may vote
+population = 100
 
 def popularity_handler(x):
     x = "{:.0%}".format(x)
@@ -11,29 +28,26 @@ def popularity_handler(x):
 def decimalize(x):
     return x / population
 
-
-groupC = 0
-groupA = 0
-groupB = 0
-
-# Make a random number to multiply by turnout to simulate turnout number percentage
-
-
-
+# Recording citizen classes choice and then counting it
 
 voteList = []
 for i in range(0, population):
-    voteList.append(Citizen().preference)
+    voteList.append(Citizen())
 for i in range(0, population):
-    if voteList[i] == 1:
-        groupA += 1
-    elif voteList[i] == 2:
-        groupB += 1
-    elif voteList[i] == 3:
-        groupC += 1
+    voteList[i].preference[0].votes += 1
 
-print("GroupA: ", groupA, "votes,", str(popularity_handler(decimalize(groupA))))
-print("GroupB: ", groupB, "votes,", str(popularity_handler(decimalize(groupB))))
-print("GroupC: ", groupC, "votes,", str(popularity_handler(decimalize(groupC))))
-total = groupA + groupB + groupC
-print("Total Votes:", total, "|", popularity_handler(total/population) + " Turnout")
+# Debug
+
+# print(voteList)
+# print(LIBERAL_PARTY, CONSERVATIVE_PARTY, NDP_PARTY)
+
+for i in range(0, len(partyList)):
+    print(partyList[i].name, partyList[i].votes)
+
+
+# Printing results + percentages and totals
+# print("Liberal Party of Canada:", LIBERAL_PARTY, "votes,", str(popularity_handler(decimalize(LIBERAL_PARTY))))
+# print("Conservative Party of Canada:", CONSERVATIVE_PARTY, "votes,", str(popularity_handler(decimalize(CONSERVATIVE_PARTY))))
+# print("New Democratic Party of Canada:", NDP_PARTY, "votes,", str(popularity_handler(decimalize(NDP_PARTY))))
+# total = LIBERAL_PARTY + CONSERVATIVE_PARTY + NDP_PARTY
+# print("Total Votes:", total, "|", popularity_handler(total/population) + " Turnout")
