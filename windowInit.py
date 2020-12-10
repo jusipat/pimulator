@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+from logic import decimalize, popularity_handler
 
 row1 =[[sg.Button("1")], [sg.Button("1")], [sg.Button("1")]]
 
