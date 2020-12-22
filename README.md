@@ -1,2 +1,2 @@
 # pimulator
-Parliament and election simulations made with python
+Rough simulation of the Canadian 2019 General Election.
