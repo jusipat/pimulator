@@ -12,13 +12,6 @@ federalNDPSUM = 0
 federalGRNSUM = 0
 federalPPCSUM = 0
 
-dynamicLPC = 5
-dynamicCPC = 5
-dynamicNDP = 3
-dynamicGRN = 1
-dynamicPPC = 2
-
-
 class Party:
     def __init__(self, name, weight, votes):
         self.name = name
@@ -31,9 +24,14 @@ def popularity_handler(x):
 
 
 def density_bias(x):
-    p = population / 10000
-    return x*p
-
+    if x == LPC:
+        return x.weight * 1.1
+    elif x == NDP:
+        return x.weight * 1.2
+    elif x == GRN:
+        return x.weight * 1.25
+    else:
+        return x.weight
 
 
 class Riding:
@@ -42,11 +40,11 @@ class Riding:
         ridingWeight = 0
 
 
-LPC = Party("Liberal Party of Canada", dynamicLPC, 0)
-CPC = Party("Conservative Party of Canada", dynamicCPC, 0)
-NDP = Party("New Democratic Party of Canada", dynamicNDP, 0)
-GRN = Party("Green Party of Canada", dynamicGRN, 0)
-PPC = Party("People's Party of Canada", dynamicPPC, 0)
+LPC = Party("Liberal Party of Canada", 1, 0)
+CPC = Party("Conservative Party of Canada", 1, 0)
+NDP = Party("New Democratic Party of Canada", 1, 0)
+GRN = Party("Green Party of Canada", 1, 0)
+PPC = Party("People's Party of Canada", 1, 0)
 
 partyList = [LPC, CPC, NDP, GRN, PPC]
 
@@ -54,12 +52,13 @@ partyList = [LPC, CPC, NDP, GRN, PPC]
 class Citizen:
     def __init__(self):
         self.preference = random.choices(partyList,
-                                         weights=[density_bias(LPC.weight), density_bias(CPC.weight), density_bias(NDP.weight), density_bias(GRN.weight), density_bias(PPC.weight)])
+                                         weights=[density_bias(LPC), density_bias(CPC), density_bias(NDP), density_bias(GRN), density_bias(PPC)])
 
 
 print(title)
 
 for i in range(0, numberOfRidings):
+
     ridingInstance = Riding("Federal Riding " + str(ridingIterator))
     population = int(input(f"What is the population of Federal Riding {str(ridingIterator)}? "))
 
@@ -67,8 +66,8 @@ for i in range(0, numberOfRidings):
     voteList = []
     for i in range(0, population):
         voteList.append(Citizen())
-    for i in range(0, population):
-        voteList[i].preference[0].votes += 1
+    for choices in range(0, population):
+        voteList[choices].preference[0].votes += 1
 
     # Printing results + percentages and totals
     print('\n')
@@ -103,8 +102,8 @@ for i in range(0, numberOfRidings):
     for i in range(0, len(partyList)):
         partyList[i].votes = 0
 
-print(f'Liberal vote sum of      ', federalLPCSUM, 'votes | Electoral performance was weighted at a',LPC.weight)
-print(f'Conservative vote sum of ', federalCPCSUM, 'votes | Electoral performance was weighted at a',CPC.weight)
-print(f'NDP vote sum of          ', federalNDPSUM, 'votes | Electoral performance was weighted at a',NDP.weight)
-print(f'Green vote sum of        ', federalGRNSUM, 'votes | Electoral performance was weighted at a',GRN.weight)
-print(f"People's vote sum of     ", federalPPCSUM, 'votes | Electoral performance was weighted at a',PPC.weight)
+print(f'Liberal vote sum of      ', federalLPCSUM, 'votes | Electoral performance was weighted at a',density_bias(LPC))
+print(f'Conservative vote sum of ', federalCPCSUM, 'votes | Electoral performance was weighted at a',density_bias(CPC))
+print(f'NDP vote sum of          ', federalNDPSUM, 'votes | Electoral performance was weighted at a',density_bias(NDP))
+print(f'Green vote sum of        ', federalGRNSUM, 'votes | Electoral performance was weighted at a',density_bias(GRN))
+print(f"People's vote sum of     ", federalPPCSUM, 'votes | Electoral performance was weighted at a',density_bias(PPC))
