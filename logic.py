@@ -1,7 +1,7 @@
 import random
 
 # Variables
-population = 1000
+
 ridingIterator = 1
 numberOfRidings = int(input("How many ridings exist in this election?"))
 title = '===============\n\bFederal Election Simulator 2021:\n===============\n'
@@ -12,9 +12,15 @@ federalNDPSUM = 0
 federalGRNSUM = 0
 federalPPCSUM = 0
 
+dynamicLPC = 5
+dynamicCPC = 5
+dynamicNDP = 3
+dynamicGRN = 1
+dynamicPPC = 2
+
 
 class Party:
-    def __init__(self, name, weight):
+    def __init__(self, name, weight, votes):
         self.name = name
         self.weight = weight
         self.votes = 0
@@ -24,17 +30,23 @@ def popularity_handler(x):
     return "{:.0%}".format(x / population)
 
 
+def density_bias(x):
+    p = population / 10000
+    return x*p
+
+
+
 class Riding:
     def __init__(self, name):
         self.name = name
+        ridingWeight = 0
 
 
-
-LPC = Party("Liberal Party of Canada", 4, )
-CPC = Party("Conservative Party of Canada", 3)
-NDP = Party("New Democratic Party of Canada", 2)
-GRN = Party("Green Party of Canada", 1)
-PPC = Party("People's Party of Canada", 1)
+LPC = Party("Liberal Party of Canada", dynamicLPC, 0)
+CPC = Party("Conservative Party of Canada", dynamicCPC, 0)
+NDP = Party("New Democratic Party of Canada", dynamicNDP, 0)
+GRN = Party("Green Party of Canada", dynamicGRN, 0)
+PPC = Party("People's Party of Canada", dynamicPPC, 0)
 
 partyList = [LPC, CPC, NDP, GRN, PPC]
 
@@ -42,14 +54,14 @@ partyList = [LPC, CPC, NDP, GRN, PPC]
 class Citizen:
     def __init__(self):
         self.preference = random.choices(partyList,
-                                         weights=[LPC.weight, CPC.weight, NDP.weight, GRN.weight, PPC.weight])
+                                         weights=[density_bias(LPC.weight), density_bias(CPC.weight), density_bias(NDP.weight), density_bias(GRN.weight), density_bias(PPC.weight)])
 
 
 print(title)
 
 for i in range(0, numberOfRidings):
-    for i in range(0, numberOfRidings):
-        ridingInstance = Riding("Federal Riding " + str(ridingIterator))
+    ridingInstance = Riding("Federal Riding " + str(ridingIterator))
+    population = int(input(f"What is the population of Federal Riding {str(ridingIterator)}? "))
 
     # Recording citizen classes choice and then counting it
     voteList = []
@@ -59,10 +71,11 @@ for i in range(0, numberOfRidings):
         voteList[i].preference[0].votes += 1
 
     # Printing results + percentages and totals
+    print('\n')
     for i in range(0, len(partyList)):
         print(f"{partyList[i].name}, {popularity_handler(partyList[i].votes)} | {partyList[i].votes} votes cast")
     total = [LPC.votes, CPC.votes, NDP.votes, GRN.votes, PPC.votes]
-    print(f"Total Votes Cast: {sum(total)}")
+    sortedTotal = [(sorted(total, reverse=True))]
 
     federalLPCSUM += partyList[0].votes
     federalCPCSUM += partyList[1].votes
@@ -82,19 +95,16 @@ for i in range(0, numberOfRidings):
     elif max(total) == PPC.votes:
         victor = PPC
 
-    print(victor.name,
+    print('\n',victor.name,
           f'has received the majority of the vote ({max(total)} votes) and have won in {ridingInstance.name}.\n')
     ridingIterator += 1
 
     # Reset voting variables
-    partyList[0].votes = 0
-    partyList[1].votes = 0
-    partyList[2].votes = 0
-    partyList[3].votes = 0
-    partyList[4].votes = 0
+    for i in range(0, len(partyList)):
+        partyList[i].votes = 0
 
-print('Liberal vote sum of ', federalLPCSUM)
-print('Conservative vote sum of ', federalCPCSUM)
-print('Progressive vote sum of ', federalNDPSUM)
-print('Green vote sum of ', federalGRNSUM)
-print("People's vote sum of", federalPPCSUM)
+print(f'Liberal vote sum of      ', federalLPCSUM, 'votes | Electoral performance was weighted at a',LPC.weight)
+print(f'Conservative vote sum of ', federalCPCSUM, 'votes | Electoral performance was weighted at a',CPC.weight)
+print(f'NDP vote sum of          ', federalNDPSUM, 'votes | Electoral performance was weighted at a',NDP.weight)
+print(f'Green vote sum of        ', federalGRNSUM, 'votes | Electoral performance was weighted at a',GRN.weight)
+print(f"People's vote sum of     ", federalPPCSUM, 'votes | Electoral performance was weighted at a',PPC.weight)
