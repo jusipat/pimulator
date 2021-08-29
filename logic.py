@@ -3,7 +3,7 @@ import random
 # Variables
 
 ridingIterator = 1
-numberOfRidings = int(input("How many ridings exist in this election?"))
+numberOfRidings = int(input("How many riding's exist in this election?"))
 title = '===============\n\bFederal Election Simulator 2021:\n===============\n'
 
 federalLPCSUM = 0
@@ -11,6 +11,7 @@ federalCPCSUM = 0
 federalNDPSUM = 0
 federalGRNSUM = 0
 federalPPCSUM = 0
+
 
 class Party:
     def __init__(self, name, weight, votes):
@@ -23,28 +24,33 @@ def popularity_handler(x):
     return "{:.0%}".format(x / population)
 
 
-def density_bias(x):
-    if x == LPC:
-        return x.weight * 1.1
-    elif x == NDP:
-        return x.weight * 1.2
-    elif x == GRN:
-        return x.weight * 1.25
+def density_bias(party_weight):
+    if party_weight == LPC:
+        return party_weight.weight / population * 103
+    elif party_weight == NDP:
+        return party_weight.weight / population * 105
+    elif party_weight == GRN:
+        return party_weight.weight / population * 101
+    elif party_weight == PPC:
+        return party_weight.weight
+    elif party_weight == PPC and rural:
+        return party_weight.weight + 0.5
+    elif rural:
+        return 2
     else:
-        return x.weight
+        return party_weight.weight
 
 
 class Riding:
     def __init__(self, name):
         self.name = name
-        ridingWeight = 0
 
 
-LPC = Party("Liberal Party of Canada", 1, 0)
-CPC = Party("Conservative Party of Canada", 1, 0)
-NDP = Party("New Democratic Party of Canada", 1, 0)
-GRN = Party("Green Party of Canada", 1, 0)
-PPC = Party("People's Party of Canada", 1, 0)
+LPC = Party("Liberal Party of Canada", 3, 0)
+CPC = Party("Conservative Party of Canada", 3, 0)
+NDP = Party("New Democratic Party of Canada", 2, 0)
+GRN = Party("Green Party of Canada", .5, 0)
+PPC = Party("People's Party of Canada", .7, 0)
 
 partyList = [LPC, CPC, NDP, GRN, PPC]
 
@@ -52,7 +58,8 @@ partyList = [LPC, CPC, NDP, GRN, PPC]
 class Citizen:
     def __init__(self):
         self.preference = random.choices(partyList,
-                                         weights=[density_bias(LPC), density_bias(CPC), density_bias(NDP), density_bias(GRN), density_bias(PPC)])
+                                         weights=[density_bias(LPC), density_bias(CPC), density_bias(NDP),
+                                                  density_bias(GRN), density_bias(PPC)])
 
 
 print(title)
@@ -61,6 +68,11 @@ for i in range(0, numberOfRidings):
 
     ridingInstance = Riding("Federal Riding " + str(ridingIterator))
     population = int(input(f"What is the population of Federal Riding {str(ridingIterator)}? "))
+    isRural = (input("Is this riding rurally based? "))
+    if isRural == 'Yes' or 'True' or 'yes' or 'true':
+        rural = True
+    else:
+        rural = False
 
     # Recording citizen classes choice and then counting it
     voteList = []
@@ -94,7 +106,7 @@ for i in range(0, numberOfRidings):
     elif max(total) == PPC.votes:
         victor = PPC
 
-    print('\n',victor.name,
+    print('\n', victor.name,
           f'has received the majority of the vote ({max(total)} votes) and have won in {ridingInstance.name}.\n')
     ridingIterator += 1
 
@@ -102,8 +114,8 @@ for i in range(0, numberOfRidings):
     for i in range(0, len(partyList)):
         partyList[i].votes = 0
 
-print(f'Liberal vote sum of      ', federalLPCSUM, 'votes | Electoral performance was weighted at a',density_bias(LPC))
-print(f'Conservative vote sum of ', federalCPCSUM, 'votes | Electoral performance was weighted at a',density_bias(CPC))
-print(f'NDP vote sum of          ', federalNDPSUM, 'votes | Electoral performance was weighted at a',density_bias(NDP))
-print(f'Green vote sum of        ', federalGRNSUM, 'votes | Electoral performance was weighted at a',density_bias(GRN))
-print(f"People's vote sum of     ", federalPPCSUM, 'votes | Electoral performance was weighted at a',density_bias(PPC))
+print(f'Liberal vote sum of      ', federalLPCSUM, 'votes | Electoral performance was weighted at a', density_bias(LPC))
+print(f'Conservative vote sum of ', federalCPCSUM, 'votes | Electoral performance was weighted at a', density_bias(CPC))
+print(f'NDP vote sum of          ', federalNDPSUM, 'votes | Electoral performance was weighted at a', density_bias(NDP))
+print(f'Green vote sum of        ', federalGRNSUM, 'votes | Electoral performance was weighted at a', density_bias(GRN))
+print(f"People's vote sum of     ", federalPPCSUM, 'votes | Electoral performance was weighted at a', density_bias(PPC))
